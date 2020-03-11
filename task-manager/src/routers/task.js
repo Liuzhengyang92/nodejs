@@ -23,19 +23,48 @@ router.post('/task', auth, async (req, res) => {
   // })
 })
 
+//GET
 router.get('/task', auth, async (req, res) => {
+  // try {
+  //   const users = await Task.find({ owner: req.user._id })
+  //   res.send(users)
+  // } catch (err) {
+  //   res.status(500).send(err)
+  // }
 
-  try {
-    const users = await Task.find({ owner: req.user._id })
-    res.send(users)
-  } catch (err) {
-    res.status(500).send(err)
-  }
-  // Task.find({}).then((tasks) => {
-  //   res.send(tasks)
-  // }).catch((err) => {
+  // try {
+  //   await req.user.populate('tasks').execPopulate()
+  //   res.send(req.user.tasks)
+  // } catch (e) {
   //   res.status(500).send()
-  // })
+  // }
+
+  //this one is to use params to filter task with completed true or false
+  //GET /tasks?limit=2&skip=20
+  //GET /tasks?sortBy=createdAt:desc
+  const match = {}
+  const sort = {}
+  if (req.query.completed) {
+    match.completed = req.query.completed === 'true'
+  }
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(':')
+    sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+  }
+  try {
+    await req.user.populate({
+      path: 'tasks',
+      match,
+      options: {
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip),
+        sort
+      }
+    }).execPopulate()
+    res.send(req.user.tasks)
+  } catch(e) {
+    res.status(500).send()
+  }
 })
 
 router.get('/task/:id', auth, async (req, res) => {
