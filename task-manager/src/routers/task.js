@@ -12,7 +12,7 @@ router.post('/task', auth, async (req, res) => {
 
   try {
     await task.save()
-    res.send(task)
+    res.status(201).send(task)
   } catch (err) {
     res.status(400).send(err)
   }
@@ -110,7 +110,6 @@ router.patch('/task/:id', auth, async (req, res) => {
     updates.forEach((update) => task[update] = req.body[update])
     await task.save()
     // const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-
     res.send(task)
   } catch (err) {
     res.status(400).send(err)
@@ -120,7 +119,6 @@ router.patch('/task/:id', auth, async (req, res) => {
 router.delete('/task/:id', auth, async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
-
     if (!task) {
       return res.status(404).send()
     }
