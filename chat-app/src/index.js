@@ -20,14 +20,20 @@ let count = 0
 io.on('connection', (socket) => {
   console.log('New WebSocket connection!')
 
-  socket.emit('countUpdated', count)
+  // socket.emit('countUpdated', count)
 
-  socket.on('increment', () => {
-    count++
-    //socket is for a single connection
-    // socket.emit('countUpdated', count)
-    //io can send the latest value to all connections to the socket
-    io.emit('countUpdated', count)
+  // socket.on('increment', () => {
+  //   count++
+  //   //socket is for a single connection
+  //   // socket.emit('countUpdated', count)
+  //   //io can send the latest value to all connections to the socket
+  //   io.emit('countUpdated', count)
+  // })
+
+  socket.emit('message', 'Welcome!')
+
+  socket.on('sendMessage', (message) => {
+    io.emit('message', message)
   })
 })
 
